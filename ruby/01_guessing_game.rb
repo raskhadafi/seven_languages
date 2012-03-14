@@ -8,7 +8,15 @@ def get_number
 end
 
 def calculate_points(guessing, direction, random_number = rand(10))
-  
+  switch direction
+    case 1
+      $points = $points + 1 if guessing < random_number
+    case 2
+      $points = $points + 1 if guessing > random_number
+  end
+
+  puts "Your current score is #{$points}."
+  puts "---------------------------------"
 end
 
 def number
@@ -24,7 +32,17 @@ def number
 end
 
 def lower_or_higher
-  puts ""
+  puts "Do you think your number is:"
+  puts "1 for lower"
+  puts "2 for higher"
+
+  guess = gets.strip.to_i
+
+  if guess > 0 && guess < 3
+    guess
+  else
+    lower_or_higher
+  end
 end
 
 puts "Welcome to the guessing game."
