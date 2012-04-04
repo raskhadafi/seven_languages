@@ -12,7 +12,22 @@
 #
 # This should print "lions".
 
+class CsvRow
+  attr_accessor :content, :headers
 
+  def initialize(headers, content)
+    @headers = headers
+    @content = content
+  end
+
+  def method_missing(name, *args)
+    if index = @headers.index(name.to_s)
+      @content[index]
+    else
+      raise("#{name}: no such column name")
+    end
+  end
+end
 
 module ActsAsCsv
   def self.included(base)
@@ -26,40 +41,34 @@ module ActsAsCsv
   end
 
   module InstanceMethods
-    class CsvArray < ::Array
-
-      def row(&block)
-        puts block.to_s.inspect
-      end
-
-      def method_missing(sym, *args, &block)
-        puts sym.to_s
-      end
-    end
-
     def read
       filename = self.class.to_s.downcase + '.txt'
       file = File.new(filename)
       @headers = file.gets.chomp.split(', ')
-      @csv_contents = CsvArray.new
 
-      file.each do |row|
-        @csv_contents << row.chomp.split(', ')
+
+      @csv_contents = file.inject([]) do |out, row|
+        out << row.chomp.split(', ')
+
+        out
       end
     end
 
-    attr_accessor :headers, :csv_contents
+    attr_accessor :csv_contents, :headers
+
     def initialize
       read
     end
 
-    def each(&block)
-      @csv_contents.row(&block)
+    def each
+      @csv_contents.each do |content|
+        yield CsvRow.new(@headers, content)
+      end
     end
   end
 end
 
-class RubyCsv  # no inheritance! You can mix it in
+class RubyCsv
   include ActsAsCsv
   acts_as_csv
 end
