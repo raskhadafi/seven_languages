@@ -1,3 +1,5 @@
+#!/bin/bash ruby
+
 # Day 2 Self-study
 
 puts "Excercise 3"
