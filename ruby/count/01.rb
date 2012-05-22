@@ -1,3 +1,5 @@
+require 'benchmark'
+
 class Array
   def count
     i = 0
@@ -7,5 +9,8 @@ class Array
   end
 end
 
-a = [1, 2, 4]
-p a.count
+a = [1, 2, 4, 5, 6, 7, 8, 9, 10]
+
+Benchmark.bm(7) do |x|
+  x.report("count:") { a.count }
+end
